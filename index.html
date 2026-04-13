@@ -2,42 +2,42 @@
 <html>
 <head>
     <style>
-        body { background: #1a1a1a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #2a2a2a; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 300px; text-align: center; }
-        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #444; background: #333; color: white; }
-        button { width: 100%; padding: 10px; background: #ff4444; border: none; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #cc0000; }
-        h2 { color: #ff4444; margin-bottom: 20px; }
+        body { background: #000; color: white; font-family: sans-serif; text-align: center; padding-top: 50px; }
+        input { padding: 10px; width: 250px; border-radius: 5px; border: 1px solid #444; background: #222; color: #fff; }
+        button { padding: 10px 20px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>MISG HUB ADMIN</h2>
-        <input type="text" id="hwid" placeholder="Paste HWID here">
-        <input type="text" id="user" placeholder="Enter Username">
-        <button onclick="submitData()">ADD USER</button>
-        <p id="msg" style="font-size: 12px; margin-top: 10px; color: #aaa;"></p>
-    </div>
+    <h2>Add HWID:Username</h2>
+    <input type="text" id="inputData" placeholder="HWID:Username">
+    <button onclick="addToSheet()">Submit</button>
+    <p id="status"></p>
 
     <script>
-        function submitData() {
-            var hwid = document.getElementById('hwid').value;
-            var user = document.getElementById('user').value;
-            var msg = document.getElementById('msg');
+        function addToSheet() {
+            const input = document.getElementById('inputData').value;
+            const status = document.getElementById('status');
+            const [hwid, user] = input.split(':');
             
             if(!hwid || !user) {
-                msg.innerText = "Please fill both boxes!";
+                status.innerText = "Error: Use HWID:Username";
                 return;
             }
+
+            status.innerText = "Sending...";
+
+            // REPLACE THIS URL WITH YOUR GOOGLE EXEC URL
+            const webAppUrl = "https://script.google.com/macros/s/AKfycbxyGpyNSN2TTkglNBUJUYR0RMK_IGK5atqRwnBVvOFjq9wTatO7kLtQTJWr-FbVPO264w/exec";
             
-            msg.innerText = "Adding to sheet...";
-            
-            // This calls the Google Script function
-            google.script.run.withSuccessHandler(function(res) {
-                msg.innerText = res;
-                document.getElementById('hwid').value = "";
-                document.getElementById('user').value = "";
-            }).addUser(hwid, user);
+            // This sends the data to your Google Sheet
+            fetch(`${webAppUrl}?hwid=${hwid}&user=${user}`, {
+                mode: 'no-cors' // This is required for Google Script redirects
+            }).then(() => {
+                status.innerText = "Successfully added!";
+                document.getElementById('inputData').value = "";
+            }).catch(() => {
+                status.innerText = "Error connecting to Google.";
+            });
         }
     </script>
 </body>
