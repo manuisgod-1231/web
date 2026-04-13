@@ -1,43 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { background: #000; color: white; font-family: sans-serif; text-align: center; padding-top: 50px; }
-        input { padding: 10px; width: 250px; border-radius: 5px; border: 1px solid #444; background: #222; color: #fff; }
-        button { padding: 10px 20px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        body { background: #0b0b0b; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #151515; padding: 30px; border-radius: 12px; border: 1px solid #333; width: 300px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; box-sizing: border-box; outline: none; }
+        button { width: 100%; padding: 12px; background: #ff4747; border: none; color: #fff; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:active { background: #c23636; }
+        #status { margin-top: 15px; font-size: 13px; color: #888; }
     </style>
 </head>
 <body>
-    <h2>Add HWID:Username</h2>
-    <input type="text" id="inputData" placeholder="HWID:Username">
-    <button onclick="addToSheet()">Submit</button>
-    <p id="status"></p>
+    <div class="card">
+        <h2 style="margin:0;">MISG HUB</h2>
+        <p style="color:#666; font-size:12px;">Paste HWID:Username below</p>
+        <input type="text" id="rawInput" placeholder="ID:Name">
+        <button onclick="submit()">ADD USER</button>
+        <div id="status">Ready</div>
+    </div>
 
     <script>
-        function addToSheet() {
-            const input = document.getElementById('inputData').value;
+        function submit() {
+            const input = document.getElementById('rawInput').value;
             const status = document.getElementById('status');
-            const [hwid, user] = input.split(':');
-            
-            if(!hwid || !user) {
+            const url = "https://script.google.com/macros/s/AKfycbxyGpyNSN2TTkglNBUJUYR0RMK_IGK5atqRwnBVvOFjq9wTatO7kLtQTJWr-FbVPO264w/exec"; // PUT YOUR EXEC LINK HERE
+
+            if (!input.includes(":")) {
                 status.innerText = "Error: Use HWID:Username";
                 return;
             }
 
+            const [id, user] = input.split(':');
             status.innerText = "Sending...";
 
-            // REPLACE THIS URL WITH YOUR GOOGLE EXEC URL
-            const webAppUrl = "https://script.google.com/macros/s/AKfycbxyGpyNSN2TTkglNBUJUYR0RMK_IGK5atqRwnBVvOFjq9wTatO7kLtQTJWr-FbVPO264w/exec";
+            // The "Image Trick" to force Google to accept the data
+            const img = new Image();
+            img.src = url + "?hwid=" + encodeURIComponent(id.trim()) + "&user=" + encodeURIComponent(user.trim());
             
-            // This sends the data to your Google Sheet
-            fetch(`${webAppUrl}?hwid=${hwid}&user=${user}`, {
-                mode: 'no-cors' // This is required for Google Script redirects
-            }).then(() => {
-                status.innerText = "Successfully added!";
-                document.getElementById('inputData').value = "";
-            }).catch(() => {
-                status.innerText = "Error connecting to Google.";
-            });
+            setTimeout(() => {
+                status.innerText = "Sent to Sheet!";
+                document.getElementById('rawInput').value = "";
+            }, 2000);
         }
     </script>
 </body>
