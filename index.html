@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { background: #1a1a1a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #2a2a2a; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 300px; text-align: center; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #444; background: #333; color: white; }
+        button { width: 100%; padding: 10px; background: #ff4444; border: none; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #cc0000; }
+        h2 { color: #ff4444; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>MISG HUB ADMIN</h2>
+        <input type="text" id="hwid" placeholder="Paste HWID here">
+        <input type="text" id="user" placeholder="Enter Username">
+        <button onclick="submitData()">ADD USER</button>
+        <p id="msg" style="font-size: 12px; margin-top: 10px; color: #aaa;"></p>
+    </div>
+
+    <script>
+        function submitData() {
+            var hwid = document.getElementById('hwid').value;
+            var user = document.getElementById('user').value;
+            var msg = document.getElementById('msg');
+            
+            if(!hwid || !user) {
+                msg.innerText = "Please fill both boxes!";
+                return;
+            }
+            
+            msg.innerText = "Adding to sheet...";
+            
+            // This calls the Google Script function
+            google.script.run.withSuccessHandler(function(res) {
+                msg.innerText = res;
+                document.getElementById('hwid').value = "";
+                document.getElementById('user').value = "";
+            }).addUser(hwid, user);
+        }
+    </script>
+</body>
+</html>
