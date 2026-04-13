@@ -22,28 +22,42 @@
     </div>
 
     <script>
-        function submit() {
-            const input = document.getElementById('rawInput').value;
-            const status = document.getElementById('status');
-            const url = "https://script.google.com/macros/s/AKfycbxyGpyNSN2TTkglNBUJUYR0RMK_IGK5atqRwnBVvOFjq9wTatO7kLtQTJWr-FbVPO264w/exec"; // PUT YOUR EXEC LINK HERE
+    function submit() {
+        const input = document.getElementById('rawInput').value;
+        const status = document.getElementById('status');
+        const url = "PASTE_YOUR_EXEC_URL_HERE"; 
 
-            if (!input.includes(":")) {
-                status.innerText = "Error: Use HWID:Username";
-                return;
-            }
-
-            const [id, user] = input.split(':');
-            status.innerText = "Sending...";
-
-            // The "Image Trick" to force Google to accept the data
-            const img = new Image();
-            img.src = url + "?hwid=" + encodeURIComponent(id.trim()) + "&user=" + encodeURIComponent(user.trim());
-            
-            setTimeout(() => {
-                status.innerText = "Sent to Sheet!";
-                document.getElementById('rawInput').value = "";
-            }, 2000);
+        if (!input.includes(":")) {
+            status.innerText = "Error: Use HWID:Username";
+            return;
         }
-    </script>
+
+        const [id, user] = input.split(':');
+        status.innerText = "Sending...";
+
+        // This creates a hidden form and submits it
+        // This bypasses almost every browser security block
+        const form = document.createElement('form');
+        form.method = 'GET';
+        form.action = url;
+        form.style.display = 'none';
+
+        const hwidInput = document.createElement('input');
+        hwidInput.name = 'hwid';
+        hwidInput.value = id.trim();
+        form.appendChild(hwidInput);
+
+        const userInput = document.createElement('input');
+        userInput.name = 'user';
+        userInput.value = user.trim();
+        form.appendChild(userInput);
+
+        document.body.appendChild(form);
+        form.submit();
+
+        status.innerText = "Sent! Check sheet.";
+        document.getElementById('rawInput').value = "";
+    }
+</script>
 </body>
 </html>
